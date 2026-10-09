@@ -22,10 +22,15 @@ Route::get('/bienvenue', function () {
         'groupe' => 'MDW32',
         'cours' => 'Atelier Framework Côté Serveur',
     ]);
-    Route::get('/heure', function () {
-        return view('heure', [
-            'heure' => date('H:i'),
-            'date' => date('d/m/Y'),
-        ]);
-    });
+});
+
+Route::get('/heure', function () {
+    return view('heure', [
+        'heure' => date('H:i'),
+        'date' => date('d/m/Y'),
+    ]);
+});
+
+Route::get('/a-propos', function () {
+    return view('a-propos');
 });
