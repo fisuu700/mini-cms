@@ -32,5 +32,8 @@ Route::get('/heure', function () {
 });
 
 Route::get('/a-propos', function () {
-    return view('a-propos');
+    return view('a-propos', [
+        'auteur' => 'Firas Bouzid',
+        'groupe' => 'MDW32',
+    ]);
 });
