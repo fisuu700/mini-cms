@@ -4,25 +4,24 @@ Projet fil rouge de l'Atelier Framework Côté Serveur (Laravel 13, PHP 8.3+), 3
 
 Auteur : Firas Bouzid, groupe MDW32.
 
-Mini-CMS évoluera au fil du semestre vers une petite plateforme de publication : pages publiques, back-office authentifié, API JSON et tests Pest. Chaque session se termine par un tag Git (`lab-01`, `lab-01b`, puis un tag par session).
+Mini-CMS évolue au fil du semestre vers une petite plateforme de publication : pages publiques, back-office authentifié, API JSON et tests Pest. Chaque session se termine par un tag Git (`lab-01`, `lab-01b`, `lab-02`, etc.).
 
-## État actuel (tag lab-01b)
-
-- Routes en closures : `/`, `/bonjour`, `/bonjour-court`, `/bienvenue`, `/version`, `/heure` et `/a-propos`.
-- Vues Blade : `bienvenue`, `heure` et `a-propos`.
+## État actuel (tag lab-02)
+- Routes nommées, toutes servies par des contrôleurs : `PageController` (pages) et `PostController` (articles).
+- Articles stockés dans un tableau PHP, sans base de données pour l'instant.
+- Layout Blade `<x-layout>` avec Tailwind chargé par Vite.
 - Base de données SQLite locale (`database/database.sqlite`, non versionnée).
 
 ## Routes disponibles
 
-| Méthode | URI | Réponse |
-|---|---|---|
-| GET | `/` | Vue `welcome` |
-| GET | `/bonjour` | Texte brut de salutation |
-| GET | `/bonjour-court` | Texte brut écrit avec une fonction fléchée |
-| GET | `/bienvenue` | Vue `bienvenue` avec nom, groupe et cours |
-| GET | `/version` | Version de Laravel et PHP |
-| GET | `/heure` | Vue `heure` avec la date et l'heure actuelles |
-| GET | `/a-propos` | Vue `a-propos` avec le nom de l'auteur et le groupe |
+| Méthode | URI | Nom | Action |
+|---|---|---|---|
+| GET | `/` | `home` | `PageController@home` |
+| GET | `/a-propos` | `about` | `PageController@about` |
+| GET | `/heure` | `time` | `PageController@time` |
+| GET | `/posts` | `posts.index` | `PostController@index` |
+| GET | `/posts/archive/{year}` | `posts.archive` | `PostController@archive` |
+| GET | `/posts/{slug}` | `posts.show` | `PostController@show` |
 
 ## Prérequis
 
