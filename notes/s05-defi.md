@@ -6,3 +6,4 @@ home.blade.php utilise x-post-card et @forelse : oui / non
 Le nouveau test passe et php artisan test est vert : oui / non
 
 Pourquoi get() et pas paginate(3) sur la page d'accueil ?
+
