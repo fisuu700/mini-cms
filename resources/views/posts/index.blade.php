@@ -1,15 +1,15 @@
-<x-layout>
-    <x-slot:title>{{ $heading }} - Mini-CMS</x-slot:title>
+<x-layout title="Liste des articles">
+    <x-page-header title="Les articles" />
 
-    <x-page-header :title="$heading" />
-
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
         @forelse ($posts as $post)
             <x-post-card :post="$post" />
         @empty
-            <x-alert type="warning" title="Aucun article" class="md:col-span-2">
-                Il n'y a pas encore d'article publié.
-            </x-alert>
+            <p class="text-gray-500">Aucun article pour le moment.</p>
         @endforelse
+    </div>
+
+    <div class="my-6">
+        {{ $posts->links() }}
     </div>
 </x-layout>
