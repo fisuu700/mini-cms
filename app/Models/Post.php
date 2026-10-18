@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,12 +24,8 @@ class Post extends Model
         ];
     }
 
-    #[Scope]
-    protected function published(Builder $query): Builder
+    public function scopePublished(Builder $query): void
     {
-        return $query
-            ->where('is_published', true)
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+        $query->where('is_published', true);
     }
 }
