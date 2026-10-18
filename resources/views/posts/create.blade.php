@@ -1,5 +1,5 @@
 <x-layout title="Créer un article">
-    <x-page-header title="Créer un nouvel article" />
+    <x-page-header title="Nouvel article" />
 
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-200 my-6">
         <form action="{{ route('posts.store') }}" method="POST">
@@ -24,10 +24,10 @@
             </div>
 
             <div class="mb-4">
-                <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Contenu</label>
-                <textarea name="content" id="content" rows="6"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2">{{ old('content') }}</textarea>
-                @error('content')
+                <label for="body" class="block text-sm font-medium text-gray-700 mb-1">Contenu</label>
+                <textarea name="body" id="body" rows="6"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2">{{ old('body') }}</textarea>
+                @error('body')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
