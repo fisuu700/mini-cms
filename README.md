@@ -1,15 +1,9 @@
-# Mini-CMS
+## État actuel (tag lab-03b)
 
-Projet fil rouge de l'Atelier Framework Côté Serveur (Laravel 13, PHP 8.3+), 3e année MDW, ISET Sidi Bouzid.
-
-Auteur : Firas Bouzid, groupe MDW32.
-
-Mini-CMS évolue au fil du semestre vers une petite plateforme de publication : pages publiques, back-office authentifié, API JSON et tests Pest. Chaque session se termine par un tag Git (`lab-01`, `lab-01b`, `lab-02`, etc.).
-
-- Articles enregistrés dans une base SQLite et lus avec le modèle Eloquent `Post`.
-- Table `posts` créée par une migration : après un clone, `php artisan migrate` la recrée (vide).
-- Liste paginée, détail par liaison modèle-route, formulaire de création avec validation côté serveur.
-- Premiers tests Pest : `php artisan test`.
+- CRUD complet des articles : liste, détail, création, modification, suppression avec confirmation.
+- Colonne `excerpt` ajoutée par une nouvelle migration.
+- Scope `published` utilisé sur l'accueil et l'archive.
+- Tests Pest des lectures (`PostPagesTest`) et des écritures (`PostWriteTest`) : `php artisan test`.
 
 ## Routes disponibles
 
@@ -23,36 +17,12 @@ Mini-CMS évolue au fil du semestre vers une petite plateforme de publication : 
 | GET | `/posts/create` | `posts.create` | `PostController@create` |
 | POST | `/posts` | `posts.store` | `PostController@store` |
 | GET | `/posts/{post}` | `posts.show` | `PostController@show` |
-## Prérequis
+| GET | `/posts/{post}/edit` | `posts.edit` | `PostController@edit` |
+| PUT | `/posts/{post}` | `posts.update` | `PostController@update` |
+| DELETE | `/posts/{post}` | `posts.destroy` | `PostController@destroy` |
+| PATCH | `/posts/{post}/publication` | `posts.publication` | `PostController@togglePublication` |
+### Session 06
 
-- PHP et Composer (PHP 8.3 ou plus depuis https://www.php.net/downloads, avec les extensions curl, fileinfo, mbstring, openssl, pdo_sqlite, sqlite3 et zip activées dans php.ini, et Composer depuis https://getcomposer.org).
-- Node.js LTS et npm.
-- Git.
+![Formulaire de modification prérempli](screenshots/s06-modification.png)
 
-## Installation
-
-### Bash (Git Bash, macOS, Linux)
-
-```bash
-git clone https://github.com/fisuu700/mini-cms.git
-cd mini-cms
-composer install
-npm install
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate
-composer run dev
-```
-
-## Captures d'écran
-
-### Session 04
-
-![Liste des articles](screenshots/s04-articles.png)
-
-### Session 05
-
-![Liste paginée des articles](screenshots/s05-articles.png)
-
-![Formulaire avec erreurs de validation](screenshots/s05-formulaire.png)
+![Confirmation de suppression](screenshots/s06-suppression.png)

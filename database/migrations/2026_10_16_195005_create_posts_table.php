@@ -18,6 +18,8 @@ class CreatePostsTable extends Migration
             $table->text('body');
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
