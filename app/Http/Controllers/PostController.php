@@ -14,7 +14,7 @@ class PostController extends Controller
     {
         return view('posts.index', [
             'heading' => 'Tous les articles',
-            'posts' => Post::latest('id')->paginate(4),
+            'posts' => Post::with('user', 'category', 'tags')->latest('id')->paginate(4),
         ]);
     }
 
@@ -22,7 +22,7 @@ class PostController extends Controller
     {
         return view('posts.index', [
             'heading' => 'Articles de '.$year,
-            'posts' => Post::published()->whereYear('published_at', $year)->latest('id')->paginate(4),
+            'posts' => Post::published()->with('user', 'category', 'tags')->whereYear('published_at', $year)->latest('id')->paginate(4),
         ]);
     }
 
@@ -51,7 +51,19 @@ class PostController extends Controller
 
     public function show(Post $post): View
     {
-        return view('posts.show', compact('post'));
+        $post->load('user', 'category', 'tags');
+
+        $related = $post->category
+            ? $post->category->posts()
+                ->published()
+                ->where('id', '!=', $post->id)
+                ->with('user', 'category', 'tags')
+                ->latest('published_at')
+                ->take(3)
+                ->get()
+            : collect();
+
+        return view('posts.show', compact('post', 'related'));
     }
 
     public function edit(Post $post): View
@@ -83,7 +95,8 @@ class PostController extends Controller
 
         return redirect()->route('posts.index');
     }
-        public function togglePublication(Post $post): RedirectResponse
+
+    public function togglePublication(Post $post): RedirectResponse
     {
         $isPublished = ! $post->is_published;
 
