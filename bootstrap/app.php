@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureSiteIsWritable;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -32,7 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $previous = $e->getPrevious();
 
-            if ($previous instanceof ModelNotFoundException && $previous->getModel() === Post::class) {
+            if (! $previous instanceof ModelNotFoundException) {
+                return null;
+            }
+
+            if ($previous->getModel() === Post::class) {
                 $recentPosts = Post::published()
                     ->with('user', 'category', 'tags')
                     ->latest('published_at')
@@ -40,6 +45,12 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->get();
 
                 return response()->view('errors.article-introuvable', ['recentPosts' => $recentPosts], 404);
+            }
+
+            if ($previous->getModel() === Category::class) {
+                $categories = Category::withCount('posts')->orderBy('name')->get();
+
+                return response()->view('errors.category-introuvable', ['categories' => $categories], 404);
             }
 
             return null;
