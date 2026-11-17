@@ -43,3 +43,30 @@ it('keeps the standard 404 page for an unknown category', function () {
         ->assertNotFound()
         ->assertDontSee('Article introuvable');
 });
+
+it('shows the read-only banner on the home page when the site is read-only', function () {
+    config(['site.read_only' => true]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('Site en lecture seule');
+});
+
+it('suggests published posts but no draft on the unknown post page', function () {
+    $published = Post::factory()->create([
+        'title' => 'Article publié récent',
+        'is_published' => true,
+        'published_at' => now(),
+    ]);
+    $draft = Post::factory()->create([
+        'title' => 'Brouillon récent',
+        'is_published' => false,
+        'published_at' => null,
+    ]);
+
+    $this->get('/posts/999')
+        ->assertNotFound()
+        ->assertSee('Articles récents')
+        ->assertSee($published->title)
+        ->assertDontSee($draft->title);
+});
