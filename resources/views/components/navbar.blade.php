@@ -4,6 +4,9 @@
 
         <x-nav-link to="posts.index" match="posts.*">Accueil</x-nav-link>
         <x-nav-link to="posts.index" match="posts.*">Articles</x-nav-link>
+        @can('manage-categories')
+            <x-nav-link to="admin.categories.index" match="admin.categories.*">Catégories</x-nav-link>
+        @endcan
 
         <div class="ml-auto flex flex-wrap items-center gap-2">
             @auth
