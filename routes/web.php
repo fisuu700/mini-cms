@@ -32,6 +32,7 @@ Route::post('/deconnexion', [LoginController::class, 'destroy'])
 Route::middleware('writable')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::resource('posts', PostController::class)->except(['index', 'show']);
+        Route::get('/mes-articles', [PostController::class, 'myPosts'])->name('my-posts');
         Route::patch('/posts/{post}/publication', [PostController::class, 'togglePublication'])->name('posts.publication');
 
         Route::prefix('admin')->name('admin.')->group(function () {

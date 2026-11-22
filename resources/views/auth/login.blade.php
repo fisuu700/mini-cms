@@ -24,6 +24,11 @@
 
         <button type="submit" class="rounded-md bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-700">Se connecter</button>
 
+        <div class="flex items-center gap-2">
+            <input type="checkbox" id="remember" name="remember" value="1" @checked(old('remember'))>
+            <label for="remember" class="text-sm text-gray-700">Se souvenir de moi</label>
+        </div>
+
         <p class="text-sm text-gray-600">
             Pas encore de compte ?
             <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:underline">Créer un compte</a>
