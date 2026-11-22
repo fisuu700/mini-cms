@@ -80,3 +80,73 @@ Back-office des catégories et des tags, messages de validation en français, pa
 ![Barre de navigation d'un utilisateur connecté, avec le message « Vous êtes connecté. »](screenshots/s11-connexion.png)
 
 ![Page 403 quand un auteur ouvre la modification de l'article d'un autre auteur](screenshots/s11-interdit.png)
+
+## Comparaison avec le Starter Kit Livewire
+
+### Architecture de l'authentification
+
+**Mini-CMS (ce projet)**
+- Authentification « classique » : contrôleurs `LoginController`, `RegisterController` avec `Auth::attempt()`, régénération de session, remember token géré manuellement.
+- Middleware `auth` sur les routes protégées, middleware `admin` (`EnsureUserIsAdmin`) pour la zone `/admin`.
+- Un seul guard `web` (session/cookie), pas de fortify/sanctum/breeze.
+
+**Laravel Livewire Starter Kit** (`laravel/livewire-starter-kit`)
+- Utilise **Laravel Breeze** (ou **Laravel Jetstream** selon la version) comme base d'authentification.
+- **Fortify** en arrière-plan pour les actions d'authentification (login, register, password reset, email verification, two-factor).
+- **Sanctum** pour l'API token (SPA + mobile).
+- Composants Livewire/Blade pour l'UI (forms, modals, validation temps réel).
+- Two-factor authentication (2FA) intégré, confirmation de mot de passe pour actions sensibles.
+
+### Autorisations
+
+**Mini-CMS**
+- **Middleware de route** : `auth` puis `admin` (alias dans `bootstrap/app.php`) pour fermer `/admin/*`.
+- **Gates** : `manage-categories`, `manage-tags` (simples closures `fn (User $u) => $u->isAdmin()`).
+- **Policy** : `PostPolicy` avec `view`, `create`, `update`, `delete` ; l'autorisation dépend de l'instance (`$post->user_id`).
+- **Form Requests** : `authorize()` appelle le Gate/Policy (`$this->user()->can('update', $post)` ou `Gate::allows('manage-tags')`).
+- **Vues** : `@can('manage-categories')`, `@can('manage-tags')` pour masquer/afficher les liens.
+- **Tests** : `actingAs()`, `assertForbidden()`, `assertRedirect(route('login'))`, `Gate::forUser($user)->allows(...)`.
+
+**Laravel Livewire Starter Kit**
+- **Policies** : même concept (`PostPolicy`, `UserPolicy`), mais souvent enregistrées via `AuthServiceProvider::$policies` ou découvertes automatiquement (Laravel 11+).
+- **Gates** : définis dans `AuthServiceProvider::boot()` ou via la syntaxe `Gate::define()`.
+- **Middleware** : `auth` + `verified` (email vérifié) + rôles via **Spatie Laravel Permission** ou Gates custom.
+- **Livewire Components** : `#[Authorized]` ou `$this->authorize()` dans les méthodes `mount()`, `save()`, `delete()`.
+- **Blade** : même `@can`, `@cannot`, `@auth`, `@guest`.
+- **Tests** : même API Pest (`actingAs`, `assertForbidden`, `assertRedirect`).
+
+### Différences clés
+
+| Aspect | Mini-CMS | Livewire Starter Kit |
+|--------|----------|---------------------|
+| **Auth backend** | Contrôleurs manuels + `Auth::attempt()` | Fortify (actions decouplées) |
+| **API tokens** | Non | Sanctum (SPA + mobile) |
+| **2FA** | Non | Oui (Fortify) |
+| **Email verification** | Non | Oui (middleware `verified`) |
+| **Password confirmation** | Non | Oui (pour actions sensibles) |
+| **UI Auth** | Blade simple | Composants Livewire/Blade interactifs |
+| **Autorisation** | Gates + Policies + Middleware | Même stack, mais souvent Spatie Permission pour rôles |
+| **Tests** | Pest, assertions manuelles | Pest, même API, parfois plus de tests fournis |
+
+### Ce que Mini-CMS a fait « à la main » et que le Starter Kit fournit
+
+1. **Routes d'auth** : `login`, `register`, `password.reset`, `email.verification`, `two-factor` — tout est prêt.
+2. **Middleware `verified`** : force la vérification d'email avant d'accéder aux zones protégées.
+3. **Password Confirm** : ré-entrer le mot de passe avant `destroy`, `update` sensibles.
+4. **Two-Factor** : TOTP, recovery codes, UI Livewire.
+5. **Session management** : logout other devices, log des sessions actives.
+6. **Profile management** : mise à jour nom, email, mot de passe, avatar.
+7. **Composants UI** : inputs avec validation temps réel, messages d'erreur, loading states.
+
+### Ce que Mini-CMS garde comme intérêt pédagogique
+
+- **Visibilité totale** : chaque ligne d'auth/autorisation est écrite, lisible, modifiable.
+- **Pas de magie** : pas de Fortify/Sanctum en boîte noire ; on comprend le flux `Auth::attempt()` → session → middleware → Gate/Policy.
+- **Tests explicites** : on écrit soi-même `actingAs`, `assertForbidden`, `Gate::forUser` — ça force à comprendre la différence entre 403 (connecté, pas le droit) et 302 vers `/login` (pas connecté).
+- **Adaptabilité** : facile de remplacer par JWT, API tokens, ou un autre guard sans casser l'existant.
+
+### Conclusion
+
+Le **Starter Kit Livewire** est un **gain de temps énorme en production** : il livre l'auth complète (2FA, email verification, password confirm, sessions, profil) en quelques minutes, avec une UI Livewire moderne et accessible.
+
+**Mini-CMS** sert à **comprendre les briques** : middleware, Gates, Policies, Form Requests, tests d'autorisation. Une fois ces concepts maîtrisés, migrer vers le Starter Kit (ou Fortify + Sanctum + Livewire) devient trivial — on sait exactement quoi remplacer et pourquoi.

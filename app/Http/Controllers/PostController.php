@@ -17,9 +17,24 @@ class PostController extends Controller
 {
     public function index(): View
     {
+        $query = Post::with('user', 'category', 'tags');
+
+        // Guests see only published posts; authenticated users see their drafts too
+        if (auth()->check()) {
+            $user = auth()->user();
+            if (! $user->isAdmin()) {
+                $query->where(function ($q) use ($user): void {
+                    $q->where('is_published', true)
+                        ->orWhere('user_id', $user->id);
+                });
+            }
+        } else {
+            $query->published();
+        }
+
         return view('posts.index', [
             'heading' => 'Tous les articles',
-            'posts' => Post::with('user', 'category', 'tags')->latest('id')->paginate(4),
+            'posts' => $query->latest('id')->paginate(4),
         ]);
     }
 
@@ -57,6 +72,8 @@ class PostController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', Post::class);
+
         return view('posts.create', [
             'categories' => Category::orderBy('name')->get(),
             'tags' => Tag::orderBy('name')->get(),
@@ -90,6 +107,8 @@ class PostController extends Controller
 
     public function show(Post $post): View
     {
+        Gate::authorize('view', $post);
+
         $post->load('user', 'category', 'tags');
 
         $related = $post->category

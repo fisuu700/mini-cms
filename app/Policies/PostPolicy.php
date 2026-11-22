@@ -8,6 +8,26 @@ use App\Models\User;
 class PostPolicy
 {
     /**
+     * Determine whether the user can view the model.
+     */
+    public function view(?User $user, Post $post): bool
+    {
+        if ($post->is_published) {
+            return true;
+        }
+
+        return $user?->isAdmin() || ($user && $user->id === $post->user_id);
+    }
+
+    /**
+     * Determine whether the user can create models.
+     */
+    public function create(User $user): bool
+    {
+        return true; // Any authenticated user can create
+    }
+
+    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Post $post): bool
